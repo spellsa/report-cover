@@ -1,0 +1,84 @@
+% 必要なパッケージは以下です。
+\RequirePackage{fix-cm}
+\documentclass[uplatex,a4j,dvipdfmx]{jsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage{txfonts}
+\usepackage[deluxe]{otf}
+\usepackage[dvipdfmx]{graphicx,xcolor}
+\usepackage{tikz}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage{fancyhdr}
+
+% <-- ここから下をコピペして使う -->
+% <-- ここから下をコピペして使う -->
+% <-- ここから下をコピペして使う -->
+\input{report_cover.tex}
+
+% === 表紙入力欄ここから ===
+% ReportCoverSetup の設定値は以下のとおりです。
+% experiment-number : 実験番号
+% experiment-title : 実験タイトル
+% teacher : 教員名
+% deadline-date : 提出期限日
+% submit-date : 提出日
+% resubmit-date : 再提出日
+% grade : 学年
+% attendance-number : 出席番号
+% group : 班番号
+% email-local : メールアドレスの @ より前の部分
+% reporter-name : 報告者名
+% partner-1 : 実験パートナー1名目
+% partner-2 : 実験パートナー2名目
+% partner-3 : 実験パートナー3名目
+% 日付は {2024 12 01} のように「年 月 日」を半角スペース区切りで書く。
+% submit-date などには {today} と書くとコンパイル日の日付を使える。
+
+\ReportCoverSetup{
+  experiment-number = {12},
+  experiment-title = {RLC直列回路の共振特性},
+  teacher = {田中一郎},
+  deadline-date = {2024 12 01},
+  submit-date = {2024 12 01},
+  resubmit-date = {2024 12 08},
+  grade = {3},
+  attendance-number = {24},
+  group = {5},
+  email-local = {a1b2c3d4},
+  reporter-name = {石川太郎花子},
+  partner-1 = {山田一郎},
+  partner-2 = {鈴木花子},
+  partner-3 = {高橋次郎}
+}
+
+% 実験実施日は必要な行だけ使う。 
+% 書き方は、\ReportExperimentDay{通し番号}{日付}{温度}{湿度}です。
+% 日付は {2024 12 01} のように「年 月 日」を半角スペース区切りで書きます。
+% 通し番号は1~8まで対応しています。5以降は右の行に表示されます。
+\ReportExperimentDay{1}{2024 12 01}{23.5}{58}
+\ReportExperimentDay{2}{2024 12 01}{23.5}{58}
+\ReportExperimentDay{3}{2024 12 01}{23.5}{58}
+\ReportExperimentDay{4}{2024 12 01}{23.5}{58}
+% === 表紙入力欄ここまで ===
+
+\begin{document}
+% 表紙・目次はページ番号非表示
+\pagestyle{empty}
+
+\hypersetup{pageanchor=false} % タイトルはページ番号を非表示
+%=== 表紙 ===
+\ExperimentReportCover
+\hypersetup{pageanchor=true} % 目次以降はページ番号を表示
+
+\cleardoublepage % 本文を新しいページから始める
+% 本文からページ番号をリセットし、フッターにページ番号を表示
+\setcounter{page}{1}
+% <-- ここまで上をコピペして使う -->
+% <-- ここまで上をコピペして使う -->
+% <-- ここまで上をコピペして使う -->
+
+% === 本文開始 ===
+\subsection{目的}
+インピーダンスの概念を理解し、交流回路に用いられる素子（抵抗R、コンデンサC、インダクタL）の働きを学ぶ。
+
+\end{document}

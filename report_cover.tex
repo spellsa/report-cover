@@ -1,0 +1,303 @@
+% 電子情報工学実験報告書の表紙。
+% main.tex側では \ReportCoverSetup と \ReportExperimentDay だけを編集する。
+
+\makeatletter
+
+\newcommand{\ReportCoverClearDate}[1]{%
+  \@namedef{ReportCover#1Year}{}%
+  \@namedef{ReportCover#1Month}{}%
+  \@namedef{ReportCover#1Day}{}%
+}
+
+\def\ReportCoverTodayKeyword{today}
+
+\newcommand{\ReportCoverSetTodayDate}[1]{%
+  \@namedef{ReportCover#1Year}{\number\year}%
+  \@namedef{ReportCover#1Month}{\number\month}%
+  \@namedef{ReportCover#1Day}{\number\day}%
+}
+
+\newcommand{\ReportCoverSetDate}[2]{%
+  \def\ReportCoverDateInput{#2}%
+  \ifx\ReportCoverDateInput\@empty
+    \ReportCoverClearDate{#1}%
+  \else
+    \ifx\ReportCoverDateInput\ReportCoverTodayKeyword
+      \ReportCoverSetTodayDate{#1}%
+    \else
+      \expandafter\ReportCoverSetDateAux\expandafter{#1}#2\@nil
+    \fi
+  \fi
+}
+
+\def\ReportCoverSetDateAux#1#2 #3 #4\@nil{%
+  \@namedef{ReportCover#1Year}{#2}%
+  \@namedef{ReportCover#1Month}{#3}%
+  \@namedef{ReportCover#1Day}{#4}%
+}
+
+\newcommand{\ReportCoverClearExperimentDay}[1]{%
+  \ReportCoverClearDate{Experiment#1}%
+  \@namedef{ReportCoverExperiment#1Temperature}{}%
+  \@namedef{ReportCoverExperiment#1Humidity}{}%
+}
+
+\newcommand{\ReportCoverReset}{%
+  \def\ReportCoverTitle{電子情報工学実験報告書}%
+  \def\ReportCoverExperimentNumber{}%
+  \def\ReportCoverExperimentTitle{}%
+  \def\ReportCoverTeacher{}%
+  \ReportCoverClearDate{Deadline}%
+  \ReportCoverClearDate{Submit}%
+  \ReportCoverClearDate{Resubmit}%
+  \def\ReportCoverGrade{}%
+  \def\ReportCoverAttendanceNumber{}%
+  \def\ReportCoverGroup{}%
+  \def\ReportCoverEmailLocal{}%
+  \def\ReportCoverReporterName{}%
+  \def\ReportCoverPartnerOne{}%
+  \def\ReportCoverPartnerTwo{}%
+  \def\ReportCoverPartnerThree{}%
+  \ReportCoverClearExperimentDay{1}%
+  \ReportCoverClearExperimentDay{2}%
+  \ReportCoverClearExperimentDay{3}%
+  \ReportCoverClearExperimentDay{4}%
+  \ReportCoverClearExperimentDay{5}%
+  \ReportCoverClearExperimentDay{6}%
+  \ReportCoverClearExperimentDay{7}%
+  \ReportCoverClearExperimentDay{8}%
+}
+
+\pgfkeys{
+  /reportcover/.is family,
+  /reportcover,
+  title/.store in=\ReportCoverTitle,
+  experiment-number/.store in=\ReportCoverExperimentNumber,
+  experiment-title/.store in=\ReportCoverExperimentTitle,
+  teacher/.store in=\ReportCoverTeacher,
+  deadline/.code={\ReportCoverSetDate{Deadline}{#1}},
+  deadline-date/.code={\ReportCoverSetDate{Deadline}{#1}},
+  submit/.code={\ReportCoverSetDate{Submit}{#1}},
+  submit-date/.code={\ReportCoverSetDate{Submit}{#1}},
+  resubmit/.code={\ReportCoverSetDate{Resubmit}{#1}},
+  resubmit-date/.code={\ReportCoverSetDate{Resubmit}{#1}},
+  grade/.store in=\ReportCoverGrade,
+  attendance-number/.store in=\ReportCoverAttendanceNumber,
+  group/.store in=\ReportCoverGroup,
+  email-local/.store in=\ReportCoverEmailLocal,
+  reporter-name/.store in=\ReportCoverReporterName,
+  partner-1/.store in=\ReportCoverPartnerOne,
+  partner-2/.store in=\ReportCoverPartnerTwo,
+  partner-3/.store in=\ReportCoverPartnerThree
+}
+
+\newcommand{\ReportCoverSetup}[1]{%
+  \pgfkeys{/reportcover,#1}%
+}
+
+% #1: 行番号(1--8), #2: 日付(例: 2024 12 01), #3: 温度, #4: 湿度
+\newcommand{\ReportExperimentDay}[4]{%
+  \ReportCoverSetDate{Experiment#1}{#2}%
+  \@namedef{ReportCoverExperiment#1Temperature}{#3}%
+  \@namedef{ReportCoverExperiment#1Humidity}{#4}%
+}
+
+\newcommand{\ReportCoverDatePart}[2]{%
+  \@nameuse{ReportCover#1#2}%
+}
+
+\newcommand{\ReportCoverExperimentDateCell}[1]{%
+  \makebox[34mm][c]{%
+    \makebox[12mm][c]{\ReportCoverDatePart{Experiment#1}{Year}}\hspace{1.5mm}／\hspace{1.5mm}%
+    \makebox[5mm][c]{\ReportCoverDatePart{Experiment#1}{Month}}\hspace{1.5mm}／\hspace{1.5mm}%
+    \makebox[5mm][c]{\ReportCoverDatePart{Experiment#1}{Day}}%
+  }%
+}
+
+\newcommand{\ReportCoverExperimentTemperature}[1]{%
+  \@nameuse{ReportCoverExperiment#1Temperature}%
+}
+
+\newcommand{\ReportCoverExperimentHumidity}[1]{%
+  \@nameuse{ReportCoverExperiment#1Humidity}%
+}
+
+\newcommand{\ReportCoverCenteredName}[1]{%
+  \makebox[70mm][c]{#1}%
+}
+
+% 指定Word表紙をA4上の絶対座標で再現する。
+% 座標は左上を原点とし、xは右方向、紙面下方向は負のy値でmm単位指定する。
+\newcommand{\ExperimentReportCover}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \begin{tikzpicture}[remember picture, overlay, x=1mm, y=1mm]
+      \begin{scope}[shift={(current page.north west)}]
+        \def\CoverRule{0.4pt}
+        \def\CoverDoubleGap{1.1pt}
+        \def\CoverFontTwelve{\mcfamily\fontsize{12pt}{14pt}\selectfont}
+        \def\CoverFontFourteen{\mcfamily\fontsize{14pt}{17pt}\selectfont}
+        \def\CoverFontSixteen{\mcfamily\fontsize{16pt}{20pt}\selectfont}
+        \def\CoverFontTitle{\mcfamily\fontsize{28pt}{34pt}\selectfont}
+        \def\CoverTitleScale{1.085}
+        \def\CoverFooterScale{1.082}
+
+        % 上部の3つのハイフン
+        \node[anchor=north west, inner sep=0pt, font=\CoverFontSixteen] at (30.0,-5.5) {-{}-{}-{}-{}-};
+        \node[anchor=north, inner sep=0pt, font=\CoverFontSixteen] at (105.0,-5.5) {-{}-{}-{}-{}-};
+        \node[anchor=north east, inner sep=0pt, font=\CoverFontSixteen] at (180.0,-5.5) {-{}-{}-{}-{}-};
+
+        % 受理・評点欄
+        \draw[line width=\CoverRule] (108.7,-17.8) rectangle ++(71.3,-25.8);
+        \draw[line width=\CoverRule] (126.3,-17.8) -- (126.3,-43.6);
+        \draw[line width=\CoverRule] (108.7,-30.7) -- (180.0,-30.7);
+        \node[font=\CoverFontFourteen] at (117.5,-24.2) {受理};
+        \node[font=\CoverFontFourteen] at (117.5,-37.1) {評点};
+
+        % 表題
+        \node[anchor=center, inner sep=0pt, font=\CoverFontTitle] at (105.0,-54.2)
+        {\scalebox{\CoverTitleScale}[1]{\underline{\ReportCoverTitle}}};
+
+        % 実験題目欄
+        \draw[line width=\CoverRule] (30.0,-69.8) rectangle ++(150.0,-38.3);
+        \draw[line width=\CoverRule] (70.8,-69.8) -- (70.8,-108.1);
+        \node[anchor=west, inner sep=0pt, font=\CoverFontSixteen] at (31.8,-76.5) {実験題目番号};
+        \node[anchor=west, inner sep=0pt, font=\CoverFontSixteen] at (31.8,-89.2) {実験題目名};
+        \node[anchor=west, inner sep=0pt, font=\CoverFontSixteen] at (72.5,-76.0)
+        {\underline{\makebox[24.4mm][l]{No．\ReportCoverExperimentNumber}}};
+        \node[anchor=west, inner sep=0pt, font=\CoverFontSixteen] at (72.5,-87.8)
+        {\makebox[103mm][c]{\ReportCoverExperimentTitle}};
+        \draw[line width=\CoverRule] (72.5,-91.7) -- (177.0,-91.7);
+        \node[anchor=east, inner sep=0pt, font=\CoverFontFourteen] at (175.0,-99.7)
+        {（実験担当教員名\ \ReportCoverTeacher\ 教員）};
+
+        % 提出日欄
+        \draw[line width=\CoverRule] (45.8,-125.1) -- (164.2,-125.1);
+        \node[anchor=base west, inner sep=0pt, font=\CoverFontSixteen] at (45.8,-122.4) {提出締切日};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (103.0,-122.4) {\ReportCoverDeadlineYear};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (106.0,-122.4) {年};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (131.0,-122.4) {\ReportCoverDeadlineMonth};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (133.8,-122.4) {月};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (159.0,-122.4) {\ReportCoverDeadlineDay};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (161.5,-122.4) {日};
+        \draw[line width=\CoverRule] (45.8,-136.9) -- (164.2,-136.9);
+        \node[anchor=base west, inner sep=0pt, font=\CoverFontSixteen] at (45.8,-134.2) {提出日};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (103.0,-134.2) {\ReportCoverSubmitYear};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (106.0,-134.2) {年};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (131.0,-134.2) {\ReportCoverSubmitMonth};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (133.8,-134.2) {月};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (159.0,-134.2) {\ReportCoverSubmitDay};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (161.5,-134.2) {日};
+        \draw[line width=\CoverRule] (45.8,-148.7) -- (164.2,-148.7);
+        \node[anchor=base west, inner sep=0pt, font=\CoverFontSixteen] at (45.8,-146.0) {再提出日};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (103.0,-146.0) {\ReportCoverResubmitYear};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (106.0,-146.0) {年};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (131.0,-146.0) {\ReportCoverResubmitMonth};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (133.8,-146.0) {月};
+        \node[anchor=base east, inner sep=0pt, font=\CoverFontSixteen] at (159.0,-146.0) {\ReportCoverResubmitDay};
+        \node[anchor=base, inner sep=0pt, font=\CoverFontSixteen] at (161.5,-146.0) {日};
+
+        % 実験実施日欄
+        \draw[line width=\CoverRule] (9.45,-158.8) rectangle ++(191.1,-32.8);
+        \draw[line width=\CoverRule] (20.65,-158.8) -- (20.65,-191.6);
+        \draw[line width=\CoverRule] (65.65,-158.8) -- (65.65,-191.6);
+        \draw[line width=\CoverRule] (88.15,-158.8) -- (88.15,-191.6);
+        \draw[line width=\CoverRule] (155.65,-158.8) -- (155.65,-191.6);
+        \draw[line width=\CoverRule] (178.15,-158.8) -- (178.15,-191.6);
+        \draw[line width=\CoverRule, double distance=\CoverDoubleGap] (110.65,-158.8) -- (110.65,-191.6);
+        \foreach \Y in {165.1,171.7,178.4,185.0}{
+            \draw[line width=\CoverRule] (20.65,-\Y) -- (200.55,-\Y);
+          }
+        \node[font=\CoverFontTwelve] at (15.05,-161.95) {実};
+        \node[font=\CoverFontTwelve] at (15.05,-168.4) {験};
+        \node[font=\CoverFontTwelve] at (15.05,-175.0) {実};
+        \node[font=\CoverFontTwelve] at (15.05,-181.7) {施};
+        \node[font=\CoverFontTwelve] at (15.05,-188.3) {日};
+
+        \node[font=\CoverFontTwelve] at (43.15,-161.95) {年／\hspace{4mm}月\hspace{4mm}／日};
+        \node[font=\CoverFontTwelve] at (76.90,-161.95) {温\hspace{3mm}度};
+        \node[font=\CoverFontTwelve] at (99.40,-161.95) {湿\hspace{3mm}度};
+        \node[font=\CoverFontTwelve] at (133.15,-161.95) {年／\hspace{4mm}月\hspace{4mm}／日};
+        \node[font=\CoverFontTwelve] at (166.90,-161.95) {温\hspace{3mm}度};
+        \node[font=\CoverFontTwelve] at (189.35,-161.95) {湿\hspace{3mm}度};
+
+        \node[font=\CoverFontTwelve] at (43.15,-168.4) {\ReportCoverExperimentDateCell{1}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (79.8,-168.4) {\ReportCoverExperimentTemperature{1}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (84.15,-168.4) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (102.2,-168.4) {\ReportCoverExperimentHumidity{1}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (106.65,-168.4) {％};
+        \node[font=\CoverFontTwelve] at (43.15,-175.0) {\ReportCoverExperimentDateCell{2}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (79.8,-175.0) {\ReportCoverExperimentTemperature{2}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (84.15,-175.0) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (102.2,-175.0) {\ReportCoverExperimentHumidity{2}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (106.65,-175.0) {％};
+        \node[font=\CoverFontTwelve] at (43.15,-181.7) {\ReportCoverExperimentDateCell{3}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (79.8,-181.7) {\ReportCoverExperimentTemperature{3}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (84.15,-181.7) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (102.2,-181.7) {\ReportCoverExperimentHumidity{3}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (106.65,-181.7) {％};
+        \node[font=\CoverFontTwelve] at (43.15,-188.3) {\ReportCoverExperimentDateCell{4}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (79.8,-188.3) {\ReportCoverExperimentTemperature{4}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (84.15,-188.3) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (102.2,-188.3) {\ReportCoverExperimentHumidity{4}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (106.65,-188.3) {％};
+        \node[font=\CoverFontTwelve] at (133.15,-168.4) {\ReportCoverExperimentDateCell{5}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (169.8,-168.4) {\ReportCoverExperimentTemperature{5}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (174.15,-168.4) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (192.1,-168.4) {\ReportCoverExperimentHumidity{5}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (196.55,-168.4) {％};
+        \node[font=\CoverFontTwelve] at (133.15,-175.0) {\ReportCoverExperimentDateCell{6}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (169.8,-175.0) {\ReportCoverExperimentTemperature{6}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (174.15,-175.0) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (192.1,-175.0) {\ReportCoverExperimentHumidity{6}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (196.55,-175.0) {％};
+        \node[font=\CoverFontTwelve] at (133.15,-181.7) {\ReportCoverExperimentDateCell{7}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (169.8,-181.7) {\ReportCoverExperimentTemperature{7}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (174.15,-181.7) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (192.1,-181.7) {\ReportCoverExperimentHumidity{7}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (196.55,-181.7) {％};
+        \node[font=\CoverFontTwelve] at (133.15,-188.3) {\ReportCoverExperimentDateCell{8}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (169.8,-188.3) {\ReportCoverExperimentTemperature{8}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (174.15,-188.3) {℃};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (192.1,-188.3) {\ReportCoverExperimentHumidity{8}};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontTwelve] at (196.55,-188.3) {％};
+
+        % 報告者・共同実験者欄
+        \draw[line width=\CoverRule] (37.5,-198.2) rectangle ++(135.0,-63.2);
+        \draw[line width=\CoverRule] (68.3,-198.2) -- (68.3,-261.4);
+        \draw[line width=\CoverRule] (68.3,-210.9) -- (172.5,-210.9);
+        \draw[line width=\CoverRule] (68.3,-219.9) -- (172.5,-219.9);
+        \draw[line width=\CoverRule] (37.5,-232.9) -- (172.5,-232.9);
+        \draw[line width=\CoverRule] (68.3,-242.2) -- (172.5,-242.2);
+        \draw[line width=\CoverRule] (68.3,-251.9) -- (172.5,-251.9);
+
+        \node[font=\CoverFontFourteen] at (52.9,-215.5) {報告者氏名};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontFourteen] at (93.7,-204.6) {\ReportCoverGrade};
+        \node[font=\CoverFontFourteen] at (96.8,-204.6) {年};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontFourteen] at (122.8,-204.6) {\ReportCoverAttendanceNumber};
+        \node[font=\CoverFontFourteen] at (125.8,-204.6) {番};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontFourteen] at (152.5,-204.6) {\ReportCoverGroup};
+        \node[font=\CoverFontFourteen] at (155.3,-204.6) {班};
+        \node[anchor=west, inner sep=0pt, font=\CoverFontFourteen] at (70.3,-215.4) {Email:};
+        \node[anchor=east, inner sep=0pt, font=\CoverFontFourteen] at (113.8,-215.4) {\ReportCoverEmailLocal};
+        \node[anchor=west, inner sep=0pt, font=\CoverFontFourteen] at (114.5,-215.4) {@gm.ishikawa-nct.ac.jp};
+        \node[anchor=west, inner sep=0pt, font=\CoverFontFourteen] at (70.3,-226.4) {氏名};
+        \node[font=\CoverFontFourteen] at (122.0,-226.4) {\ReportCoverCenteredName{\ReportCoverReporterName}};
+        \node[font=\CoverFontFourteen] at (52.9,-247.2)
+        {\begin{tabular}{c}共同実験者\\[4mm]氏名\end{tabular}};
+        \node[font=\CoverFontFourteen] at (120.4,-237.55) {\ReportCoverCenteredName{\ReportCoverPartnerOne}};
+        \node[font=\CoverFontFourteen] at (120.4,-247.05) {\ReportCoverCenteredName{\ReportCoverPartnerTwo}};
+        \node[font=\CoverFontFourteen] at (120.4,-256.65) {\ReportCoverCenteredName{\ReportCoverPartnerThree}};
+
+        % 所属
+        \node[anchor=center, inner sep=0pt, font=\CoverFontSixteen] at (105.0,-267.5)
+        {\scalebox{\CoverFooterScale}[1.05]{石川工業高等専門学校　電子情報工学科}};
+      \end{scope}
+    \end{tikzpicture}
+    \null
+  \end{titlepage}
+}
+
+\ReportCoverReset
+
+\makeatother
